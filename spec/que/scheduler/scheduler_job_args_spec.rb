@@ -26,17 +26,11 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
       end
     end
 
+    # Since que 1.0 args are always symbols
     it 'as symbols' do
       attempt_parse(
         last_run_time: last_time.iso8601,
         job_dictionary: dictionary
-      )
-    end
-
-    it 'as strings' do
-      attempt_parse(
-        'last_run_time' => last_time.iso8601,
-        'job_dictionary' => dictionary
       )
     end
   end

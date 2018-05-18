@@ -12,7 +12,7 @@ module Que
       SCHEDULER_FREQUENCY = 60
 
       # Always highest possible priority.
-      @priority = 0
+      self.priority = 0
 
       def run(options = nil)
         ::Que.transaction do
@@ -25,7 +25,7 @@ module Que
           enqueue_self_again(scheduler_job_args, scheduler_job_args.as_time, result)
 
           # Only now we're sure nothing errored, log the results
-          logs.each { |str| ::Que.log(message: str) }
+          logs.each { |str| ::Que.log(event: 'que-scheduler'.to_sym, message: str) }
           destroy
         end
       end
@@ -59,7 +59,7 @@ module Que
           job_dictionary: result.job_dictionary,
           run_at: next_run_at
         )
-        Audit.append(attrs[:job_id], scheduler_job_args.as_time, result)
+        Audit.append(que_attrs.fetch(:id), scheduler_job_args.as_time, result)
       end
     end
   end

@@ -17,32 +17,32 @@ RSpec.describe Que::Scheduler::Audit do
 
       audit = Que.execute('select * from que_scheduler_audit')
       expect(audit.count).to eq(1)
-      expect(audit.first['scheduler_job_id']).to eq(job_id)
-      expect(audit.first['executed_at']).to eq(executed_at)
+      expect(audit.first[:scheduler_job_id]).to eq(job_id)
+      expect(audit.first[:executed_at]).to eq(executed_at)
       db_jobs = Que.execute('select * from que_scheduler_audit_enqueued')
       expect(db_jobs.count).to eq(3)
       expect(db_jobs).to eq(
         [
           {
-            'scheduler_job_id' => 1234,
-            'job_class' => 'HalfHourlyTestJob',
-            'queue' => 'some_queue',
-            'priority' => nil,
-            'args' => '[5]',
+            scheduler_job_id: 1234,
+            job_class: 'HalfHourlyTestJob',
+            queue: 'some_queue',
+            priority: nil,
+            args: [5],
           },
           {
-            'scheduler_job_id' => 1234,
-            'job_class' => 'HalfHourlyTestJob',
-            'queue' => nil,
-            'priority' => 80,
-            'args' => '[]',
+            scheduler_job_id: 1234,
+            job_class: 'HalfHourlyTestJob',
+            queue: nil,
+            priority: 80,
+            args: [],
           },
           {
-            'scheduler_job_id' => 1234,
-            'job_class' => 'DailyTestJob',
-            'queue' => 'some_queue',
-            'priority' => nil,
-            'args' => '[3]',
+            scheduler_job_id: 1234,
+            job_class: 'DailyTestJob',
+            queue: 'some_queue',
+            priority: nil,
+            args: [3],
           }
         ]
       )

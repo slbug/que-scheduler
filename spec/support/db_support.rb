@@ -38,10 +38,15 @@ def column_default(table, column_name)
     SELECT column_name, column_default
     FROM information_schema.columns
     WHERE (table_schema, table_name, column_name) = ('public', '#{table}', '#{column_name}')
-  }).first.fetch('column_default')
+  }).first.fetch(:column_default)
 end
 
 def mock_db_time_now
   # We cannot Timecop freeze the DB clock, so we must override the now lookup.
   allow(Que::Scheduler::Db).to receive(:now).and_return(Time.zone.now)
+end
+
+def enqueue_and_run(clazz, args)
+  job = clazz.enqueue(args)
+  job.run(args)
 end
