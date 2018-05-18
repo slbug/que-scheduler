@@ -20,3 +20,5 @@ addons:
   # This is the lowest version que supports
   postgresql: "9.5"
 cache: bundler
+notifications:
+  email: false
