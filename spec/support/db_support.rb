@@ -23,9 +23,8 @@ def setup_db
   conn.execute("CREATE DATABASE #{testing_db}")
 
   ActiveRecord::Base.establish_connection(db_config)
-  Que.mode = :off
   Que.connection = ActiveRecord
-  Que.migrate!(version: 3)
+  Que.migrate!(version: 4)
   Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
   Que.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
 end
