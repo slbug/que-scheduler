@@ -51,7 +51,7 @@ module Que
 
       def check_enqueued_job(enqueued_job, job_class, args, logs)
         if enqueued_job.is_a?(Que::Job)
-          job_id = enqueued_job.attrs.fetch('job_id')
+          job_id = enqueued_job.que_attrs.fetch(:id)
           logs << "que-scheduler enqueueing #{job_class} #{job_id} with args: #{args}"
           enqueued_job
         else

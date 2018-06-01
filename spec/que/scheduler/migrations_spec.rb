@@ -65,7 +65,7 @@ RSpec.describe Que::Scheduler::Migrations do
       Que.execute(
         'select column_name, data_type from information_schema.columns ' \
         "where table_name = 'que_scheduler_audit';"
-      ).find { |row| row.fetch('column_name') == 'scheduler_job_id' }.fetch('data_type')
+      ).find { |row| row.fetch(:column_name) == 'scheduler_job_id' }.fetch(:data_type)
     end
 
     def audit_table_exists?
