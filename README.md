@@ -18,16 +18,16 @@ needs to be run, enqueueing those jobs, then enqueueing itself to check again la
     ```ruby
     gem 'que-scheduler'
     ```
-1. Specify a schedule config in a yml file (see below). The default location that que-scheduler will 
-look for it is `config/que_schedule.yml`. They are essentially the same as resque-scheduler config
+1. Specify a schedule in a yml file (see below). The default location that que-scheduler will 
+look for it is `config/que_schedule.yml`. They are essentially the same as resque-scheduler
 files, but with additional features.
 
-1. Add a migration to start the job scheduler.
+1. Add a migration to start the job scheduler and prepare the audit table.
 
     ```ruby
     class CreateQueSchedulerSchema < ActiveRecord::Migration
       def change
-        Que::Scheduler::Migrations.migrate!(version: 3)
+        Que::Scheduler::Migrations.migrate!(version: 4)
       end
     end
     ```
@@ -35,7 +35,7 @@ files, but with additional features.
 ## Schedule configuration
 
 The schedule file is a list of que job classes with arguments and a schedule frequency (in crontab 
-syntax). The format is similar to the resque-scheduler config format, though priorities must be supplied as
+syntax). The format is similar to the resque-scheduler format, though priorities must be supplied as
 integers, and job classes must be migrated from Resque to Que. Cron syntax can be anything
 understood by [fugit](https://github.com/floraison/fugit#fugitcron).
 
@@ -111,11 +111,22 @@ A job can have a `schedule_type` assigned to it. Valid values are:
    This feature ensures that jobs which *must run* for a certain cron match will always eventually 
   execute, even after a total system crash, or even a DB backup restore.
 
-## Environment Variables
+## Gem configuration
 
-You can configure some aspects of the gem with environment variables.
+You can configure some aspects of the gem with an initializer. The default is given below.
 
-* `QUE_SCHEDULER_CONFIG_LOCATION` - The location of the schedule configuration (default `config/que_schedule.yml`)
+```ruby
+Que::Scheduler.configure do |config|
+  # The location of the schedule yaml file.
+  config.schedule_location = ENV.fetch('QUE_SCHEDULER_CONFIG_LOCATION', 'config/que_schedule.yml')
+  
+  # Specify a transaction block adapter. By default, que-scheduler uses the one supplied by que.
+  # However, if, for example you rely on listeners to ActiveRecord's exact `transaction` method, or 
+  # Sequel's DB.after_commit helper, then you can supply it here.
+  config.transaction_adapter = ::Que.method(:transaction)
+end
+
+```
 
 ## Scheduler Audit
 
@@ -134,7 +145,7 @@ in a coherent state with the rest of your database.
 
 ## Concurrent scheduler detection
 
-No matter how many tasks you have defined in your config, you will only ever need one que-scheduler
+No matter how many tasks you have defined in your schedule, you will only ever need one que-scheduler
 job enqueued. que-scheduler knows this, and it will check before performing any operations that 
 there is only one of itself present.
 
@@ -144,16 +155,58 @@ it will rollback correctly and try again. It won't schedule jobs twice for a cro
 
 ## How it works
 
-que-scheduler is a job that reads a config file, enqueues any jobs it determines that need to be run,
+que-scheduler is a job that reads a schedule file, enqueues any jobs it determines that need to be run,
 then reschedules itself. The flow is as follows:
 
 1. The que-scheduler job runs for the very first time.
-1. que-scheduler loads the schedule config file. It will not schedule any other jobs, except itself, 
+1. que-scheduler loads the schedule file. It will not schedule any other jobs, except itself, 
    as it has never run before.
 1. Some time later it runs again. It knows what jobs it should be monitoring, and notices that some 
    have are due. It enqueues those jobs and then itself. Repeat.
-1. After a deploy that changes the config, the job notices any new jobs to schedule, and knows which
+1. After a deploy that changes the schedule, the job notices any new jobs to schedule, and knows which
    ones to forget. It does not need to be re-enqueued or restarted.
+   
+## DB Migrations
+
+When there is a major version (breaking) change, a migration should be run in. The version of the 
+migration proceeds at a faster rate than the version of the gem. To run in all the migrations required
+up to a number, just migrate to that number with one line, and it will perform all the intermediary steps. 
+
+ie, `Que::Scheduler::Migrations.migrate!(version: 4)` will perform all migrations necessary to 
+reach migration version `4`.
+
+As of migration `4`, two elements are added to the DB for que-scheduler to run. 
+
+1. The first is the scheduler job itself, which runs forever, re-enqueuing itself to performs its 
+   duties.
+1. The second part comprises the audit table `que_scheduler_audit` and the "enqueued" table 
+  `que_scheduler_audit`. The first tracks when the scheduler calculated what was necessary to run 
+  (if anything). The second then logs every job that the scheduler enqueues. 
+
+## Upgrading
+
+que-scheduler uses [semantic versioning](https://semver.org/), so major version changes will usually 
+require additional actions to be taken upgrading from one major version to another. 
+
+Major feature changes are listed below. The full 
+[CHANGELOG](https://github.com/hlascelles/que-scheduler/blob/master/CHANGELOG.md) can be found in 
+the root of the project. 
+
+#### Versions 3.x 
+  - Addition of a config initializer.
+  - Addition of numerous extra columns to the audit table.
+  - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 4)`
+#### Versions 2.x 
+  - Introduction of the audit table.
+  - Support for older versions of postgres
+  - Required cumulative migration: `Que::Scheduler::Migrations.migrate!(version: 3)`
+#### Versions 1.x
+  - Sequel support
+  - Config specified Timezone support
+  - Required migration adding the initial job: `Que::Scheduler::SchedulerJob.enqueue`
+#### Versions 0.x
+  - The first public release. 
+  - Required migration adding the initial job: `Que::Scheduler::SchedulerJob.enqueue`
    
 ## System requirements
 
