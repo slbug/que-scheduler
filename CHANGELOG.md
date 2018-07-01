@@ -1,3 +1,13 @@
+## 3.2.1 (2018-07-01)
+
+- Add support for ruby 2.5
+- Drop support for ruby 2.1 and rails 3.x
+- Improve DB migration state detection and error reporting
+
+## 3.1.1 (2018-06-05)
+
+* Remove railtie [#30](https://github.com/hlascelles/que-scheduler/pull/30)
+
 ## 3.1.0 (2018-06-01)
 
 * Addition of a gem config initializer [#29](https://github.com/hlascelles/que-scheduler/pull/29)

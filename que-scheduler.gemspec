@@ -1,4 +1,3 @@
-
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'que/scheduler/version'
@@ -24,13 +23,14 @@ Gem::Specification.new do |spec|
   spec.files = Dir['{lib}/**/*'] + ['README.md']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'activesupport', '>= 3.0'
+  spec.add_dependency 'activesupport', '>= 4.0'
   spec.add_dependency 'backports', '~> 3.10'
   spec.add_dependency 'fugit', '~> 1.1'
   spec.add_dependency 'hashie', '~> 3'
   # spec.add_dependency 'que', '~> 0.10'
 
-  spec.add_development_dependency 'activerecord', '>= 3.0'
+  spec.add_development_dependency 'activerecord', '>= 4.0'
+  spec.add_development_dependency 'appraisal'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'combustion'
   spec.add_development_dependency 'coveralls'
@@ -38,7 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'fasterer'
   spec.add_development_dependency 'pg', '~> 0.21'
   spec.add_development_dependency 'pry-byebug'
-  spec.add_development_dependency 'railties', '>= 3.0'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'reek'
   spec.add_development_dependency 'rspec'
