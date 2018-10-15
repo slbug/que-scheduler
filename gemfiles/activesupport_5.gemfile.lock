@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/chanks/que.git
+  revision: ad5f02cc1ae68c00699d04da8c9c8e5b4262c5a2
+  specs:
+    que (1.0.0.beta3)
+
 PATH
   remote: ..
   specs:
@@ -6,7 +12,6 @@ PATH
       backports (~> 3.10)
       fugit (~> 1.1)
       hashie (~> 3)
-      que (~> 0.10)
 
 GEM
   remote: https://rubygems.org/
@@ -106,7 +111,6 @@ GEM
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
-    que (0.14.3)
     raabro (1.1.6)
     rack (2.0.5)
     rack-test (1.1.0)
@@ -164,7 +168,7 @@ GEM
     thor (0.19.4)
     thread_safe (0.3.6)
     timecop (0.9.1)
-    tins (1.16.3)
+    tins (1.17.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     unicode-display_width (1.4.0)
@@ -189,6 +193,7 @@ DEPENDENCIES
   fasterer
   pg (~> 0.21)
   pry-byebug
+  que!
   que-scheduler!
   rake
   reek (~> 4.8)
