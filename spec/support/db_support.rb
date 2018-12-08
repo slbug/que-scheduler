@@ -45,10 +45,10 @@ module DbSupport
       # We cannot Timecop freeze the DB clock, so we must override the now lookup.
       allow(Que::Scheduler::Db).to receive(:now).and_return(Time.zone.now)
     end
-  end
-end
 
-def enqueue_and_run(clazz, args)
-  job = clazz.enqueue(args)
-  job.run(args)
+    def enqueue_and_run(clazz, args)
+      job = clazz.enqueue(args)
+      job.run(args)
+    end
+  end
 end
