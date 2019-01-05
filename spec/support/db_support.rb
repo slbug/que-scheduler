@@ -50,5 +50,16 @@ module DbSupport
       job = clazz.enqueue(args)
       job.run(args)
     end
+
+    def scheduler_job_id_type
+      Que.execute(
+        'select column_name, data_type from information_schema.columns ' \
+        "where table_name = 'que_scheduler_audit';"
+      ).find { |row| row.fetch(:column_name) == 'scheduler_job_id' }.fetch(:data_type)
+    end
+
+    def enqueued_table_exists?
+      ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
+    end
   end
 end
