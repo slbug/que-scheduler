@@ -13,11 +13,11 @@ RSpec.describe Que::Scheduler::Audit do
         ]
         described_class.append(job_id, executed_at, enqueued_jobs)
 
-        audit = Que.execute('select * from que_scheduler_audit')
+        audit = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit')
         expect(audit.count).to eq(1)
         expect(audit.first[:scheduler_job_id]).to eq(job_id)
         expect(audit.first[:executed_at]).to eq(executed_at)
-        db_jobs = Que.execute('select * from que_scheduler_audit_enqueued')
+        db_jobs = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
         expect(db_jobs.count).to eq(3)
         expect(db_jobs).to eq(
           [
@@ -27,16 +27,16 @@ RSpec.describe Que::Scheduler::Audit do
               queue: 'something',
               priority: 100,
               args: [5],
-              job_id: enqueued_jobs[0].que_attrs.fetch(:id),
+              job_id: Que::Scheduler::VersionSupport.job_attributes(enqueued_jobs[0]).fetch(:job_id),
               run_at: executed_at - 1.hour,
             },
             {
               scheduler_job_id: 1234,
               job_class: 'HalfHourlyTestJob',
-              queue: 'default',
+              queue: Que::Scheduler.configuration.que_scheduler_queue,
               priority: 80,
               args: [],
-              job_id: enqueued_jobs[1].que_attrs.fetch(:id),
+              job_id: Que::Scheduler::VersionSupport.job_attributes(enqueued_jobs[1]).fetch(:job_id),
               run_at: executed_at - 2.hours,
             },
             {
@@ -45,7 +45,7 @@ RSpec.describe Que::Scheduler::Audit do
               queue: 'some_queue',
               priority: 100,
               args: [3],
-              job_id: enqueued_jobs[2].que_attrs.fetch(:id),
+              job_id: Que::Scheduler::VersionSupport.job_attributes(enqueued_jobs[2]).fetch(:job_id),
               run_at: executed_at - 3.hours,
             }
           ]

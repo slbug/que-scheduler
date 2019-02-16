@@ -54,7 +54,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
       end
 
       def run_test(initial_job_args, to_be_scheduled)
-        DbSupport.enqueue_and_run(described_class, initial_job_args)
+        job = described_class.enqueue(initial_job_args)
+        job.run(initial_job_args)
         expect_itself_enqueued
         all_enqueued = Que.job_stats.map do |job|
           job.symbolize_keys.slice(:job_class)
@@ -76,7 +77,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         jobs = DbSupport.jobs_by_class(HalfHourlyTestJob)
         expect(jobs.count).to eq(1)
         one_result = jobs.first
-        expect(one_result[:args] || []).to eq(args)
+
+        expect_job_args_to_equal(one_result[:args] || [], args)
         expect(one_result[:queue]).to eq(queue)
         expect(one_result[:priority]).to eq(priority)
         expect(one_result[:job_class]).to eq('HalfHourlyTestJob')
@@ -158,7 +160,7 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         expect(HalfHourlyTestJob).to receive(:enqueue).and_return(false)
         test_enqueued([{ job_class: HalfHourlyTestJob }])
         expect(Que.job_stats).to eq([])
-        expect(Que.execute('select * from que_scheduler_audit_enqueued').count).to eq(0)
+        expect(Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued').count).to eq(0)
       end
     end
   end
@@ -175,14 +177,31 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     itself_jobs = DbSupport.jobs_by_class(QS::SchedulerJob)
     expect(itself_jobs.count).to eq(1)
     hash = itself_jobs.first.to_h
-    expect(hash[:queue]).to eq('default')
+    expect(hash[:queue]).to eq(Que::Scheduler.configuration.que_scheduler_queue)
     expect(hash[:priority]).to eq(0)
     expect(hash[:job_class]).to eq('Que::Scheduler::SchedulerJob')
     expect(hash[:run_at]).to eq(
       run_time.beginning_of_minute + described_class::SCHEDULER_FREQUENCY
     )
-    expect(hash[:args]).to eq(
-      [{ last_run_time: run_time.iso8601, job_dictionary: full_dictionary }]
-    )
+    expect_job_args_to_equal(hash[:args], [{ last_run_time: run_time.iso8601, job_dictionary: full_dictionary }])
+  end
+
+  def expect_job_args_to_equal(args, to_equal)
+    args = deep_symbolize_keys(args)
+
+    # expected_args = JSON.parse(().to_json, symbolize_names: true)
+    # expect(expected_args).to eq(args)
+    expect(args).to eq(to_equal)
+  end
+
+  def deep_symbolize_keys(value = self)
+    case value
+    when Array
+      value.map { |v| deep_symbolize_keys(v) }
+    when Hash
+      value.deep_symbolize_keys
+    else
+      value
+    end
   end
 end

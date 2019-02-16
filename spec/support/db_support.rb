@@ -32,15 +32,15 @@ module DbSupport
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
 
       puts "Setting DB timezone to #{::Time.zone.tzinfo.identifier}"
-      Que.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
+      Que::Scheduler::VersionSupport.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
     end
 
     def jobs_by_class(clazz)
-      Que.execute("SELECT * FROM que_jobs where job_class = '#{clazz}'")
+      Que::Scheduler::VersionSupport.execute("SELECT * FROM que_jobs where job_class = '#{clazz}'")
     end
 
     def column_default(table, column_name)
-      Que.execute(%{
+      Que::Scheduler::VersionSupport.execute(%{
         SELECT column_name, column_default
         FROM information_schema.columns
         WHERE (table_schema, table_name, column_name) = ('public', '#{table}', '#{column_name}')
@@ -52,13 +52,8 @@ module DbSupport
       allow(Que::Scheduler::Db).to receive(:now).and_return(Time.zone.now)
     end
 
-    def enqueue_and_run(clazz, args)
-      job = clazz.enqueue(args)
-      job.run(args)
-    end
-
     def scheduler_job_id_type
-      Que.execute(
+      Que::Scheduler::VersionSupport.execute(
         'select column_name, data_type from information_schema.columns ' \
         "where table_name = 'que_scheduler_audit';"
       ).find { |row| row.fetch(:column_name) == 'scheduler_job_id' }.fetch(:data_type)
