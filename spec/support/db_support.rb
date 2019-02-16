@@ -26,6 +26,7 @@ module DbSupport
       Que.connection = ActiveRecord
       Que.migrate!(version: 4)
       Que::Scheduler::Migrations.migrate!(version: Que::Scheduler::Migrations::MAX_VERSION)
+      puts "Setting DB timezone to #{::Time.zone.tzinfo.identifier}"
       Que.execute("set timezone TO '#{::Time.zone.tzinfo.identifier}';")
     end
 
