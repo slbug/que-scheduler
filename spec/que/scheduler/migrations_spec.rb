@@ -70,7 +70,8 @@ RSpec.describe Que::Scheduler::Migrations do
       expect(described_class.db_version).to eq(Que::Scheduler::Migrations::MAX_VERSION)
     end
 
-    # When que-testing is present, calls to Que::Scheduler::VersionSupport.execute do nothing and return an empty array.
+    # When que-testing is present, calls to Que::Scheduler::VersionSupport.execute do nothing and
+    # return an empty array.
     # Thus, trying to migrate a test database will always fail. It is safer to do nothing and not
     # create the que-scheduler tables. This follows the logic of que, which does not create its
     # tables either.

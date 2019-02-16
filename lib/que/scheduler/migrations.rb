@@ -27,7 +27,9 @@ module Que
         end
 
         def db_version
-          return Que::Scheduler::VersionSupport.execute(TABLE_COMMENT).first[:description].to_i if audit_table_exists?
+          if audit_table_exists?
+            return Que::Scheduler::VersionSupport.execute(TABLE_COMMENT).first[:description].to_i
+          end
 
           Que::Scheduler::Db.count_schedulers.zero? ? 0 : 1
         end
@@ -52,7 +54,8 @@ module Que
         end
 
         def execute_step(number, direction)
-          Que::Scheduler::VersionSupport.execute(IO.read("#{__dir__}/migrations/#{number}/#{direction}.sql"))
+          sql = IO.read("#{__dir__}/migrations/#{number}/#{direction}.sql")
+          Que::Scheduler::VersionSupport.execute(sql)
           return unless audit_table_exists?
 
           Que::Scheduler::VersionSupport.execute(

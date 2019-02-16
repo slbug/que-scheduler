@@ -57,8 +57,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         job = described_class.enqueue(initial_job_args)
         job.run(initial_job_args)
         expect_itself_enqueued
-        all_enqueued = Que.job_stats.map do |job|
-          job.symbolize_keys.slice(:job_class)
+        all_enqueued = Que.job_stats.map do |j|
+          j.symbolize_keys.slice(:job_class)
         end
         all_enqueued.reject! { |row| row[:job_class] == 'Que::Scheduler::SchedulerJob' }
         expect(all_enqueued).to eq(to_be_scheduled)
@@ -160,7 +160,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         expect(HalfHourlyTestJob).to receive(:enqueue).and_return(false)
         test_enqueued([{ job_class: HalfHourlyTestJob }])
         expect(Que.job_stats).to eq([])
-        expect(Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued').count).to eq(0)
+        qsae = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
+        expect(qsae.count).to eq(0)
       end
     end
   end
@@ -183,7 +184,9 @@ RSpec.describe Que::Scheduler::SchedulerJob do
     expect(hash[:run_at]).to eq(
       run_time.beginning_of_minute + described_class::SCHEDULER_FREQUENCY
     )
-    expect_job_args_to_equal(hash[:args], [{ last_run_time: run_time.iso8601, job_dictionary: full_dictionary }])
+    expect_job_args_to_equal(
+      hash[:args], [{ last_run_time: run_time.iso8601, job_dictionary: full_dictionary }]
+    )
   end
 
   def expect_job_args_to_equal(args, to_equal)
