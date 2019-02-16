@@ -27,10 +27,7 @@ module Que
         # Between Que 0.x and 1.x the result of Que execute changed keys from strings to symbols.
         # Here we wrap the concept and make sure either way produces symbols
         def execute(str, args = [])
-          normalise_array_of_hashes(Que.execute(str, args)).map do |row|
-            row[:args] = JSON.parse(row[:args]) if row.key?(:args) && row[:args].is_a?(String) && row[:args].start_with?('[')
-            row
-          end
+          normalise_array_of_hashes(Que.execute(str, args))
         end
 
         def default_scheduler_queue

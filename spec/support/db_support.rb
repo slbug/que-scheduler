@@ -62,5 +62,18 @@ module DbSupport
     def enqueued_table_exists?
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
     end
+
+    # It seems that if a jsonb column is populated with an array, then when it is selected from the
+    # DB with Que.execute the value differs by Que. For Que 0.x it comes out as a String. For 1.x
+    # it is parsed into an array. Here we force both to an array. One to investigate further on this
+    # 1.x support branch.
+    # TODO Determine source of this difference
+    def convert_args_column(db_jobs)
+      db_jobs.map do |row|
+        var = row[:args]
+        row[:args] = JSON.parse(var) if var.is_a?(String) && var.start_with?('[')
+        row
+      end
+    end
   end
 end

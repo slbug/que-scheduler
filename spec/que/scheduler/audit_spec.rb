@@ -17,7 +17,9 @@ RSpec.describe Que::Scheduler::Audit do
         expect(audit.count).to eq(1)
         expect(audit.first[:scheduler_job_id]).to eq(job_id)
         expect(audit.first[:executed_at]).to eq(executed_at)
+
         db_jobs = Que::Scheduler::VersionSupport.execute('select * from que_scheduler_audit_enqueued')
+        DbSupport.convert_args_column(db_jobs)
         expect(db_jobs.count).to eq(3)
         expect(db_jobs).to eq(
           [
