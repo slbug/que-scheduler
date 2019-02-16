@@ -13,7 +13,7 @@ module Que
       SCHEDULER_FREQUENCY = 60
 
       # Always highest possible priority.
-      self.priority = 0
+      Que::Scheduler::VersionSupport.set_priority(self, 0)
 
       def run(options = nil)
         Que::Scheduler::Db.transaction do
