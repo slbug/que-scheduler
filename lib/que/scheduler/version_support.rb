@@ -42,8 +42,6 @@ module Que
           array.map { |row| row.transform_keys(&:to_sym) }
         end
 
-        private
-
         def zero_major?
           # This is the only way to handle beta releases too
           @zero_major ||= Gem.loaded_specs['que'].version.to_s.split('.').first.to_i.zero?

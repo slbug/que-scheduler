@@ -1,11 +1,5 @@
 require 'bundler/setup'
 
-if (ENV['CI_JOB_NAME'] || '').include?('postgres_9_4')
-  puts 'For Postgres 9.4 we cannot test que 1.x (as it uses new jsonb features), ' \
-       'so we delete those appraisal files'
-  exit(0) # Exit 0 so the CI build continues
-end
-
 require 'coveralls'
 Coveralls.wear!
 
