@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "activesupport", "~> 4.0"
-gem "que", "~> 0.10"
+gem "activesupport", "~> 5.0"
+gem "que", "~> 0.14"
 
 gemspec path: "../"
