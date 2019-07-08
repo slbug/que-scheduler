@@ -75,7 +75,7 @@ GEM
     erubi (1.8.0)
     et-orbi (1.2.1)
       tzinfo
-    fasterer (0.5.1)
+    fasterer (0.6.0)
       colorize (~> 0.7)
       ruby_parser (>= 3.13.0)
     fugit (1.2.2)
@@ -164,7 +164,7 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     timecop (0.9.1)
-    tins (1.20.3)
+    tins (1.21.0)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     unicode-display_width (1.6.0)
