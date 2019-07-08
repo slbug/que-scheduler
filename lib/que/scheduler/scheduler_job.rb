@@ -70,12 +70,15 @@ module Que
 
         # And rerun...
         next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
-        SchedulerJob.enqueue(
+        enqueued_job = SchedulerJob.enqueue(
           queue: Que::Scheduler.configuration.que_scheduler_queue,
           last_run_time: last_full_execution.iso8601,
           job_dictionary: job_dictionary,
           run_at: next_run_at
         )
+        unless check_enqueued_job(enqueued_job, SchedulerJob, {}, [])
+          raise 'SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?'
+        end
       end
     end
   end

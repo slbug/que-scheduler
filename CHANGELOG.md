@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Add re-enqueue checks [#76](https://github.com/hlascelles/que-scheduler/pull/76)
+
+## 3.2.3 (2019-03-06)
+
 - Namespace support modules [#54](https://github.com/hlascelles/que-scheduler/pull/54)
 - Add Ruby 2.6 tests [#58](https://github.com/hlascelles/que-scheduler/pull/58)
 - Remove Ruby 2.2 tests [#58](https://github.com/hlascelles/que-scheduler/pull/58)
