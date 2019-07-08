@@ -76,9 +76,11 @@ module Que
           job_dictionary: job_dictionary,
           run_at: next_run_at
         )
+        # rubocop:disable Style/GuardClause
         unless check_enqueued_job(enqueued_job, SchedulerJob, {}, [])
           raise 'SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?'
         end
+        # rubocop:enable Style/GuardClause
       end
     end
   end
