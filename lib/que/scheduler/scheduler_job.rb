@@ -4,6 +4,7 @@ require_relative 'schedule'
 require_relative 'enqueueing_calculator'
 require_relative 'scheduler_job_args'
 require_relative 'state_checks'
+require_relative 'version_support'
 
 # The main job that runs every minute, determining what needs to be enqueued, enqueues the required
 # jobs, then re-enqueues itself.
@@ -76,7 +77,8 @@ module Que
           job_dictionary: job_dictionary,
           run_at: next_run_at
         )
-        # rubocop:disable Style/GuardClause
+
+        # rubocop:disable Style/GuardClause This reads better as a conditional
         unless check_enqueued_job(enqueued_job, SchedulerJob, {}, [])
           raise 'SchedulerJob could not self-schedule. Has `.enqueue` been monkey patched?'
         end
