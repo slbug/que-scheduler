@@ -27,7 +27,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
             job_class: 'Que::Scheduler::SchedulerJob',
             last_error: nil,
             priority: 0,
-            queue: ""
+            queue: ''
           )
         else
           hash_including(
@@ -40,7 +40,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
             last_error_backtrace: nil,
             last_error_message: nil,
             priority: 0,
-            queue: "default"
+            queue: 'default'
           )
         end
       attrs = described_class.job_attributes(job)
