@@ -1,4 +1,5 @@
 require 'que'
+require_relative 'version_support'
 
 module Que
   module Scheduler
