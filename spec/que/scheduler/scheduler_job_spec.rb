@@ -76,8 +76,8 @@ RSpec.describe Que::Scheduler::SchedulerJob do
         job = described_class.enqueue(initial_job_args)
         job.run(initial_job_args)
         expect_itself_enqueued
-        all_enqueued = Que.job_stats.map do |j|
-          j.symbolize_keys.slice(:job_class)
+        all_enqueued = Que.job_stats.map do |job|
+          job.symbolize_keys.slice(:job_class)
         end
         all_enqueued.reject! { |row| row[:job_class] == 'Que::Scheduler::SchedulerJob' }
         expect(all_enqueued).to eq(to_be_scheduled)
