@@ -57,7 +57,7 @@ RSpec.describe Que::Scheduler::VersionSupport do
 
   describe '.default_scheduler_queue' do
     it 'returns the queue name' do
-      expected = Que::Scheduler::VersionSupport.zero_major? ? "" : "default"
+      expected = Que::Scheduler::VersionSupport.zero_major? ? '' : 'default'
       expect(described_class.default_scheduler_queue).to eq(expected)
     end
   end
