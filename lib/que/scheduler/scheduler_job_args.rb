@@ -20,6 +20,7 @@ module Que
               job_dictionary: [],
             }
           else
+            options = options.symbolize_keys
             {
               last_run_time: Time.zone.parse(options.fetch(:last_run_time)),
               job_dictionary: options.fetch(:job_dictionary),

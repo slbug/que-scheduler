@@ -33,5 +33,13 @@ RSpec.describe Que::Scheduler::SchedulerJobArgs do
         job_dictionary: dictionary
       )
     end
+
+    # Ensure we can support que 0.x (strings)
+    it 'as strings' do
+      attempt_parse(
+        'last_run_time' => last_time.iso8601,
+        'job_dictionary' => dictionary
+      )
+    end
   end
 end
