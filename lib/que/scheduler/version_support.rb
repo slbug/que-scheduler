@@ -5,6 +5,7 @@ require 'que'
 module Que
   module Scheduler
     module VersionSupport
+      # rubocop:disable Style/GuardClause Temporary code
       class << self
         def set_priority(context, priority)
           if zero_major?
@@ -38,15 +39,18 @@ module Que
           end
         end
 
-        def normalise_array_of_hashes(array)
-          array.map { |row| row.transform_keys(&:to_sym) }
-        end
-
         def zero_major?
           # This is the only way to handle beta releases too
           @zero_major ||= Gem.loaded_specs['que'].version.to_s.split('.').first.to_i.zero?
         end
+
+        private
+
+        def normalise_array_of_hashes(array)
+          array.map { |row| row.transform_keys(&:to_sym) }
+        end
       end
+      # rubocop:enable Style/GuardClause
     end
   end
 end
