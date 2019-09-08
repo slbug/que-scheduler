@@ -5,7 +5,6 @@ require 'que'
 module Que
   module Scheduler
     module VersionSupport
-      # rubocop:disable Style/GuardClause Temporary code
       class << self
         def set_priority(context, priority)
           if zero_major?
@@ -50,7 +49,6 @@ module Que
           array.map { |row| row.transform_keys(&:to_sym) }
         end
       end
-      # rubocop:enable Style/GuardClause
     end
   end
 end
