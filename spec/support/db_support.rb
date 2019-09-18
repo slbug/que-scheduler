@@ -66,11 +66,9 @@ module DbSupport
       ActiveRecord::Base.connection.table_exists?(Que::Scheduler::Audit::ENQUEUED_TABLE_NAME)
     end
 
-    # It seems that if a jsonb column is populated with an array, then when it is selected from the
+    # When a jsonb column is populated with an array, then when it is selected from the
     # DB with Que.execute the value differs by Que. For Que 0.x it comes out as a String. For 1.x
-    # it is parsed into an array. Here we force both to an array. One to investigate further on this
-    # 1.x support branch.
-    # TODO Determine source of this difference
+    # it is parsed into an array here: https://t.ly/byDJd. This helper equalises them.
     def convert_args_column(db_jobs)
       db_jobs.map do |row|
         var = row[:args]
@@ -87,7 +85,7 @@ module DbSupport
                     !Que::Scheduler::VersionSupport.zero_major?
 
       puts 'For Postgres 9.4 we cannot test que 1.x (as it uses new jsonb features), ' \
-             'so we must short circuit here so the CI build for other versions continues...'
+           'so we must short circuit here so the CI build for other versions continues...'
       exit(0) # Exit 0 for CI
     end
   end
