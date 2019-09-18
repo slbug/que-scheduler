@@ -82,8 +82,8 @@ module DbSupport
     private
 
     def avoid_invalid_testing_scenarios
-      que_version = Que::Scheduler::VersionSupport.execute('SELECT version()').first.fetch(:version)
-      return unless que_version.start_with?('PostgreSQL 9.4') &&
+      pg_version = Que::Scheduler::VersionSupport.execute('SELECT version()').first.fetch(:version)
+      return unless pg_version.start_with?('PostgreSQL 9.4') &&
                     !Que::Scheduler::VersionSupport.zero_major?
 
       puts 'For Postgres 9.4 we cannot test que 1.x (as it uses new jsonb features), ' \
