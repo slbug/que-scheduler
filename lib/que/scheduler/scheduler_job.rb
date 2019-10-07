@@ -11,7 +11,7 @@ require_relative 'version_support'
 module Que
   module Scheduler
     class SchedulerJob < Que::Job
-      SCHEDULER_FREQUENCY = 60
+      SCHEDULER_FREQUENCY = 1
 
       # Always highest possible priority.
       Que::Scheduler::VersionSupport.set_priority(self, 0)
@@ -70,7 +70,7 @@ module Que
         Audit.append(job_id, scheduler_job_args.as_time, enqueued_jobs)
 
         # And rerun...
-        next_run_at = scheduler_job_args.as_time.beginning_of_minute + SCHEDULER_FREQUENCY
+        next_run_at = scheduler_job_args.as_time + SCHEDULER_FREQUENCY
         enqueued_job = SchedulerJob.enqueue(
           queue: Que::Scheduler.configuration.que_scheduler_queue,
           last_run_time: last_full_execution.iso8601,
